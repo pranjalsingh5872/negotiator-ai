@@ -19,14 +19,15 @@ pip install -r requirements.txt
 export ANTHROPIC_API_KEY=sk-ant-...
 
 # 4. Local fallback mode (no Anthropic key required)
+#    This is the default behavior when ANTHROPIC_API_KEY is absent.
 export LOCAL_AGENT_MODE=1
 
 # 5. CLI demo (no frontend needed)
-python demo/run_demo.py
+python run_demo.py
 
 # 6. Full system (backend + dashboard)
 cd backend && uvicorn main:app --reload
-# Open frontend/src/App.jsx in your React environment
+# Open frontend/src/App.jsx in your React environment (run frontend with npm start)
 ```
 
 ---
@@ -100,11 +101,12 @@ Each agent runs this loop every round:
 ## API Endpoints
 
 ```
-POST /negotiation/start     Start negotiation, returns session_id
+POST /negotiation/start     Start negotiation, returns session_id + ws_url
 GET  /negotiation/{id}      Current state JSON
 GET  /negotiation/{id}/offers  Offer history
 GET  /negotiation/{id}/zopa    ZOPA analysis
-WS   /ws/{id}               Real-time event stream
+GET  /health                 Service health + active sessions
+WS   /ws/{id}               Real-time event stream (state_sync + events)
 GET  /docs                  Interactive API docs
 ```
 
@@ -162,8 +164,6 @@ negotiation_system/
 │   └── tools/
 │       └── negotiation_tools.py  6 LLM tool definitions
 ├── frontend/src/App.jsx     React live dashboard
-├── demo/
-│   ├── run_demo.py          CLI demo for judges
-│   └── example_logs.json    Pre-recorded reasoning trace
+├── run_demo.py            CLI demo for judges
 └── requirements.txt
 ```
